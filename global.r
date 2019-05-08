@@ -1,0 +1,21 @@
+library(shiny)
+library(shinyjs)
+library(shinyFiles)
+library(reshape2)
+library(plyr)
+library(tidyverse)
+library(Hmisc)
+library(RJSONIO)
+library(stringr)
+library(writexl)
+library(zip)
+library(shinyBS)
+
+source('global.r')
+source('functions/eFormsParseJSON_basic.r')
+source('functions/eFormsParseJSONtext.r') 
+source('functions/eFormsOrganizeData_byTable.r')
+source('functions/karenParseEVJ.R')
+
+
+metadata <- readRDS("data/metadata.rds")

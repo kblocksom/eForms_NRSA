@@ -1,0 +1,142 @@
+---
+title: ""
+author: ""
+date: ""
+params:
+  userDataRMD: 'NULL'
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(knitr))
+suppressPackageStartupMessages(library(kableExtra))
+
+
+```
+
+
+
+```{r, echo=FALSE}
+
+include_graphics("NRSA_logo_sm.png")
+
+verification <- dplyr::filter(params[['userDataRMD']][['VERIFICATION']][[1]], PARAMETER %in% c('SITE_ID','VISIT_NO', "DATE_COL","LOC_NAME","CREW",
+                                                                                               "ACTUAL_LAT_DD","ACTUAL_LON_DD","VALXSITE",'ADD_SITE_CHAR',
+                                                                                               "GEN_COM","DRCTNS","RCHWIDTH","TRCHLEN","CREW_LEADER")) %>%
+  select(PARAMETER, RESULT)
+verification_tbl <- filter(verification, !(PARAMETER %in% c('ACTUAL_LAT_DD','ACTUAL_LON_DD',
+                                                            "CREW","DRCTNS","RCHWIDTH" ))) %>%
+  mutate(PARAMETER = dplyr::recode(PARAMETER, "SITE_ID"='Site ID',"VISIT_NO"='Visit Number',
+                                   "DATE_COL"='Sample Date',
+                                   "LOC_NAME"='Location',"VALXSITE"='Sample Type', 
+                                   "ADD_SITE_CHAR"='Site Characteristics',
+                                   "GEN_COM"='General Site Comments',"TRCHLEN"= 'Reach Length' ,
+                                   "CREW_LEADER"='Crew Leader')) 
+
+## Field parameters
+field <- dplyr::filter(params[['userDataRMD']][['FIELD']][[1]], PARAMETER %in% c("DO_DISPLAYED_UNITS" ,"LOCATION","TIME" ,"DO","TEMPERATURE" ,
+                                                                                 "PH","CONDUCTIVITY","CORRECTED")) 
+DOunits <- as.character(filter(field, PARAMETER =='DO_DISPLAYED_UNITS')$RESULT)
+CONDUCTIVITYunits <- ifelse(as.character(filter(field, PARAMETER == 'CORRECTED')$RESULT)=='Y', 'uS/cm @ 25C','uS/cm')
+
+field_tbl <- filter(field, PARAMETER %in% c('TEMPERATURE','DO','PH', 'CONDUCTIVITY')) %>%
+  dplyr::select(PARAMETER, RESULT) %>%
+  mutate(group = PARAMETER, #for rearranging
+         RESULT = ifelse(PARAMETER == 'DO', paste(RESULT,DOunits,sep=' '),RESULT),
+         RESULT = ifelse(PARAMETER == 'TEMPERATURE', paste(RESULT,'C',sep=' '),RESULT),
+         RESULT = ifelse(PARAMETER == 'CONDUCTIVITY', paste(RESULT,CONDUCTIVITYunits,sep=' '),RESULT)) %>%
+  mutate(group = recode(group, 'TEMPERATURE'=1, 'DO'=2, 'PH'=3,'CONDUCTIVITY'=4),
+         PARAMETER = recode(PARAMETER,'TEMPERATURE'='Temperature', 'DO'='Dissolved Oxygen', 'PH'='pH','CONDUCTIVITY'='Conductivity')) %>%
+  arrange(group) %>%
+  dplyr::select(-group)
+
+## Assessment info
+assessment <- dplyr::filter(params[['userDataRMD']][['ASSESSMENT']][[1]], PARAMETER %in% c('WEATHER','CONDITIONS','BEAVER_FLOW_MOD')) %>% 
+  dplyr::select(PARAMETER, RESULT) %>%
+  mutate(PARAMETER = recode(PARAMETER,"BEAVER_FLOW_MOD"='Beaver Flow Modifications', 
+                            "WEATHER"= 'Weather',"CONDITIONS"= 'Conditions'),
+         group = PARAMETER) %>%
+  mutate(group= recode(group, 'Beaver Flow Modifications'=4,'Weather'= 1,'Conditions'= 2,'Observations' = 3)) %>%
+  arrange(group) %>%
+  dplyr::select(-group) %>%
+  filter(PARAMETER!='Conditions')
+
+## samples collected
+# generic samples and description
+samples <- tibble(Sample = c('CHEM', 'WCHL', 'PERI', 'PCHL', 'PBIO', 'PDNA', 'MICX', 'ENTE','BENT'),
+                  `Sample Name` = c('Water Chemistry','Water Chlorophyll a','Periphyton Assemblage','Periphyton Chlorophyll a','Periphyton Biomass','Periphyton DNA',
+                                    "Microcystin & Cylindrospermopsin", 'Enterococci','Benthic Macroinvertebrates'),
+                  Description = c('Nutrients (nitrogen and phosphorus), basic anions & cations, turbidity, organic carbon',
+                                  'Chlorophyll a content in water sample','Algal species composition',
+                                  'Chlorophyll a content in periphyton sample','Biomass in periphyton scraping',
+                                  'eDNA fragments in water','Analyzed for algal toxins in water','*E.coli* and enterococci',
+                                  'Benthic macroinvertebrate composition'))
+# filter to only what was collected
+samplesTaken <- unique(params[['userDataRMD']][['SAMPLES']][[1]]$SAMPLE_TYPE)[!(unique(params[['userDataRMD']][['SAMPLES']][[1]]$SAMPLE_TYPE) %in% 'SAMP')]
+samples_tbl <- filter(samples, Sample %in% samplesTaken) %>%
+  distinct(`Sample Name`, .keep_all=TRUE) %>%
+  dplyr::select(`Sample Name`, Description)
+
+
+## Fish 
+fishTaxa <- dplyr::filter(params[['userDataRMD']][['FISH']][[1]], SAMPLE_TYPE == 'FISH') %>%
+  dplyr::select(LINE, PARAMETER, RESULT) 
+# First get fish counts
+fishCounts <- filter(fishTaxa, str_detect(PARAMETER, "COUNT_")) %>%
+  group_by(LINE) %>%
+  summarise(Count = sum(as.numeric(RESULT)))
+# then fix taxa and join
+fishTaxa <- filter(fishTaxa,  PARAMETER == 'NAME_COM') %>%
+  rename(`Common Name` = RESULT) %>%
+  left_join(fishCounts, by= 'LINE') %>%
+  dplyr::select(`Common Name`, Count) %>%
+  arrange(desc(Count))
+```
+
+##National Rivers and Streams Assessment Landowner Report
+
+#### About
+This report provides landowners with preliminary data available after sampling. Additional information can be provided to you after laboratory analyses are completed. If you would like to be notified when this information is available, please contact the Crew Leader.
+
+
+
+```{r row 1 tables, echo=F}  
+kable(verification_tbl,col.names=c('Station Information',''), align=c('l','r')) %>%
+  kable_styling(bootstrap_options = 'condensed', full_width = F, position = "float_left") %>%
+  column_spec(1, border_right = T) %>%
+  column_spec(2, width = "15em")
+
+kable(field_tbl,col.names=c('Field Data',''), align=c('l','r')) %>%
+  kable_styling(bootstrap_options = 'condensed', full_width = F, position = "float_left") %>%
+  column_spec(1, border_right = T, width = "10em") %>%
+  column_spec(2, width = "15em")
+
+kable(assessment ,col.names=c('Field Assessment',''), align=c('l','r')) %>%
+  kable_styling(bootstrap_options = 'condensed', full_width = F, position = "float_left") %>%
+  column_spec(1, border_right = T, width = "10em") %>%
+  column_spec(2, width = "15em")
+
+```
+
+
+
+
+```{r row 2 tables, echo=F}
+kable(samples_tbl, align=c('l','r')) %>%
+  add_header_above(c('Samples Sent for Laboratory Analysis'=2)) %>%
+  kable_styling(bootstrap_options = 'condensed', full_width = F, position = "float_left") %>%
+  column_spec(1, border_right = T, width = "15em") %>%
+  column_spec(2, width = "15em")
+
+kable(fishTaxa, align=c('l','r')) %>%
+  add_header_above(c("Fish Caught" = 2)) %>%
+  kable_styling(bootstrap_options = 'condensed', full_width = F, position = "float_left") %>%
+  column_spec(1, border_right = T, width = "12em") %>%
+  column_spec(2, width = "8em")
+
+```
+
+
