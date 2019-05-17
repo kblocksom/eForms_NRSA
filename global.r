@@ -11,7 +11,6 @@ library(writexl)
 library(zip)
 library(shinyBS)
 
-source('global.r')
 source('functions/eFormsParseJSON_basic.r')
 source('functions/eFormsParseJSONtext.r') 
 source('functions/eFormsOrganizeData_byTable.r')

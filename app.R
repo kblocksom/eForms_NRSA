@@ -6,7 +6,7 @@
 #
 #    http://shiny.rstudio.com/
 #
-
+source('global.r')
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
@@ -49,9 +49,9 @@ ui <- fluidPage(
                        sidebarPanel(h4(strong('Instructions')),
                                     p('1) Choose the directory where you have saved all of the .JSON files associated with a single site visit. A list of all
                                                          file names within the directory will be available for preview to the right when they are available to the app.'),
-                                    shinyDirButton('directory', 'Select Directory', 'Please select a folder'), br(),
+                                    fileInput(inputId='directory', buttonLabel='Browse...', label='Please select files within a folder, holding down Ctrl key to select multiple files.',multiple=TRUE, accept=c('json','JSON')), 
                                     p('2) Click the Upload button below when you are ready to analyze all data in the selected directory.'),
-                                    actionButton('uploadFiles','Upload all files in selected directory'), br(),
+                                    actionButton('parseFiles','Parse data in selected files'), br(),
                                     p('3) If you want to save the parsed files to the local directory, please click the download button for the appropriate
                                       output file format. The buttons will not be available until the data is finished processing.
                                       Once the buttons are available, you may download data. Note: saving as .csv will download a 
@@ -59,7 +59,7 @@ ui <- fluidPage(
                                     downloadButton("downloadxlsx","Save Results as .xlsx"),
                                     downloadButton("downloadcsv","Save Results as .csv")),
                        bsTooltip('directory','Select directory containing all files for site visit',trigger='hover'),
-                       bsTooltip('uploadFiles','Click here to upload files in selected folder',trigger='hover'),
+                       bsTooltip('parseFiles','Click here to parse and organize data',trigger='hover'),
                        bsTooltip('downloadxlsx','Save data to worksheets in an Excel file.',trigger='hover'),
                        bsTooltip('downloadcsv','Save data to comma-delimited files in a .zip file.',trigger='hover'),
                        mainPanel(
@@ -83,26 +83,24 @@ server <- function(input, output, session) {
   
   
   # Bring in user data when they select directory
-  volumes <- getVolumes()
-  shinyDirChoose(input, 'directory', roots=volumes, session=session)
+  # volumes <- getVolumes()
+  # shinyDirChoose(input, 'directory', roots=volumes, session=session)
   path1 <- reactive({
-    return(print(parseDirPath(volumes, input$directory)))
+    path_list <- as.vector(input$directory$datapath)
   })
   
   filesInDir <- reactive({
-    list.files(paste(path1(),'/',sep=''), pattern='json|JSON')
+    name_list <- as.vector(input$directory$name)
   })
   
-  
-  # Files in directory preview for UI
+  # Files in directory preview for UI - This works
   output$preview <- renderTable({
     req(filesInDir())
-    filesInDir() })
-  
-  
+    filesInDir() },colnames=FALSE)
+
   # The user data
-  observeEvent(input$uploadFiles, { 
-    userData$finalOut <- karenOrganizationShiny(path1()[1], list.files(paste(path1(),'/',sep=''), pattern='json|JSON') )  }) 
+  observeEvent(input$parseFiles, { 
+    userData$finalOut <- karenOrganizationShiny(as.vector(input$directory$datapath),as.vector(input$directory$name))  }) 
   
   
   # Don't let user click download button if no data available
@@ -111,33 +109,27 @@ server <- function(input, output, session) {
   
   
   # Download Excel File
-  output$downloadxlsx<- downloadHandler( filename = function() { 
-    paste( str_extract(paste(path1()[1],
-                             list.files(paste(path1(),'/',sep=''), pattern='json|JSON')[1],sep='/'),
-                       "[:alnum:]+\\_[:alpha:]+\\_[:alnum:]+\\_[:alnum:]\\_"),
+  output$downloadxlsx<- downloadHandler(filename = function() { 
+    paste(str_extract(filesInDir()[1],"[:alnum:]+\\_[:alpha:]+\\_[:alnum:]+\\_[:alnum:]\\_"),
            "summary.xlsx")},
     content = function(file) {
-      write_xlsx(karenWriteShiny(path1()[1], list.files(paste(path1(),'/',sep=''), pattern='json|JSON') , userData$finalOut), path = file)}
+      write_xlsx(karenWriteShiny(as.vector(input$directory$name), userData$finalOut), path = file)}
   )
   
   
   # Download CSV
   
   output$downloadcsv <- downloadHandler( filename = function() {
-    paste(str_extract(paste(path1()[1],
-                            list.files(paste(path1(),'/',sep=''), pattern='json|JSON')[1],sep='/'),
-                      "[:alnum:]+\\_[:alpha:]+\\_[:alnum:]+\\_[:alnum:]\\_"), "csvFiles.zip", sep="")
+    paste(str_extract(filesInDir()[1],"[:alnum:]+\\_[:alpha:]+\\_[:alnum:]+\\_[:alnum:]\\_"), "csvFiles.zip", sep="")
   },
   content = function(fname) {
     fs <- c()
     #tmpdir <- tempdir()
-    z <- karenWriteShiny(path1()[1], list.files(paste(path1(),'/',sep=''), pattern='json|JSON') , userData$finalOut)
+    z <- karenWriteShiny(as.vector(input$directory$name), userData$finalOut) 
     #dir.create(paste0(path1()[1], '/data/'))
     for (i in 1:length(z)) {
       path <- paste0(#path1()[1], '/data/',
-        str_extract(paste(path1()[1],
-                          list.files(paste(path1(),'/',sep=''), pattern='json|JSON')[1],sep='/'),
-                    "[:alnum:]+\\_[:alpha:]+\\_[:alnum:]+\\_[:alnum:]\\_"),
+        str_extract(filesInDir()[1],"[:alnum:]+\\_[:alpha:]+\\_[:alnum:]+\\_[:alnum:]\\_"),
         names(z)[[i]], ".csv")
       fs <- c(fs, path)
       write.csv(data.frame(z[[i]]), path, row.names=F)
