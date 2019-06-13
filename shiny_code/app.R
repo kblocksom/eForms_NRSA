@@ -153,11 +153,11 @@ server <- function(input, output, session) {
     paste(unique(userData$finalOut[[1]][[1]]$SITE_ID),unique(userData$finalOut[[1]][[1]]$VISIT_NO),"LandownerReport.html",sep="_"),
     content= function(file){
       tempReport <- normalizePath('landownerReport_fromApp.Rmd')
-      imageToSend1 <- normalizePath('NRSA_logo_sm.png')  # choose image name
+      imageToSend1 <- normalizePath('NRSA_logo_sm.jpg')  # choose image name
       owd <- setwd(tempdir())
       on.exit(setwd(owd))
       file.copy(tempReport, 'landownerReport_fromApp.Rmd')
-      file.copy(imageToSend1, 'NRSA_logo_sm.png') # same image name
+      file.copy(imageToSend1, 'NRSA_logo_sm.jpg') # same image name
       
       params <- list(userDataRMD=userData$finalOut)
       
