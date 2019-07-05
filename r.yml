@@ -1,6 +1,6 @@
 applications:
 - name: eForms_NRSA
-  buildpack: git://github.com/wjjung317/heroku-buildpack-r.git
+  buildpacks: https://github.com/cloudfoundry/r-buildpack.git
   command: R --no-save --gui-none < /app/startscript.r
   instances: 1
   memory: 1G
