@@ -1,5 +1,5 @@
-require(RJSONIO)
-require(RUnit)
+#require(RJSONIO)
+#require(RUnit)
 
 eFormsParseJSON <- function(fName, rxNameCharacters='A-Za-z0-9_\\-', rxDisallowedValueCharacters='\n\r\t', trimValues=TRUE)
   # Attempts to parse the specified file as JSON.  Returns a named list containing 

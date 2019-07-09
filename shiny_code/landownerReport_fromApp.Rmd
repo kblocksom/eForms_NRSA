@@ -27,7 +27,7 @@ verification <- dplyr::filter(params[['userDataRMD']][['VERIFICATION']][[1]], PA
                                                                                                "ACTUAL_LAT_DD","ACTUAL_LON_DD","VALXSITE",'ADD_SITE_CHAR',
                                                                                                "GEN_COM","DRCTNS","RCHWIDTH","TRCHLEN","CREW_LEADER")) %>%
   select(PARAMETER, RESULT)
-verification_tbl <- filter(verification, !(PARAMETER %in% c('ACTUAL_LAT_DD','ACTUAL_LON_DD',
+verification_tbl <- dplyr::filter(verification, !(PARAMETER %in% c('ACTUAL_LAT_DD','ACTUAL_LON_DD',
                                                             "CREW","DRCTNS","RCHWIDTH" ))) %>%
   mutate(PARAMETER = dplyr::recode(PARAMETER, "SITE_ID"='Site ID',"VISIT_NO"='Visit Number',
                                    "DATE_COL"='Sample Date',
@@ -42,7 +42,7 @@ field <- dplyr::filter(params[['userDataRMD']][['FIELD']][[1]], PARAMETER %in% c
 DOunits <- as.character(filter(field, PARAMETER =='DO_DISPLAYED_UNITS')$RESULT)
 CONDUCTIVITYunits <- ifelse(as.character(filter(field, PARAMETER == 'CORRECTED')$RESULT)=='Y', 'uS/cm @ 25C','uS/cm')
 
-field_tbl <- filter(field, PARAMETER %in% c('TEMPERATURE','DO','PH', 'CONDUCTIVITY')) %>%
+field_tbl <- dplyr::filter(field, PARAMETER %in% c('TEMPERATURE','DO','PH', 'CONDUCTIVITY')) %>%
   dplyr::select(PARAMETER, RESULT) %>%
   mutate(group = PARAMETER, #for rearranging
          RESULT = ifelse(PARAMETER == 'DO', paste(RESULT,DOunits,sep=' '),RESULT),
@@ -62,11 +62,11 @@ assessment <- dplyr::filter(params[['userDataRMD']][['ASSESSMENT']][[1]], PARAME
   mutate(group= recode(group, 'Beaver Flow Modifications'=4,'Weather'= 1,'Conditions'= 2,'Observations' = 3)) %>%
   arrange(group) %>%
   dplyr::select(-group) %>%
-  filter(PARAMETER!='Conditions')
+  dplyr::filter(PARAMETER!='Conditions')
 
 ## samples collected
 # generic samples and description
-samples <- tibble(Sample = c('CHEM', 'WCHL', 'PERI', 'PCHL', 'PBIO', 'PDNA', 'MICX', 'ENTE','BENT'),
+samples <- tibble::tibble(Sample = c('CHEM', 'WCHL', 'PERI', 'PCHL', 'PBIO', 'PDNA', 'MICX', 'ENTE','BENT'),
                   `Sample Name` = c('Water Chemistry','Water Chlorophyll a','Periphyton Assemblage','Periphyton Chlorophyll a','Periphyton Biomass','Periphyton DNA',
                                     "Microcystin & Cylindrospermopsin", 'Enterococci','Benthic Macroinvertebrates'),
                   Description = c('Nutrients (nitrogen and phosphorus), basic anions & cations, turbidity, organic carbon',
@@ -76,7 +76,7 @@ samples <- tibble(Sample = c('CHEM', 'WCHL', 'PERI', 'PCHL', 'PBIO', 'PDNA', 'MI
                                   'Benthic macroinvertebrate composition'))
 # filter to only what was collected
 samplesTaken <- unique(params[['userDataRMD']][['SAMPLES']][[1]]$SAMPLE_TYPE)[!(unique(params[['userDataRMD']][['SAMPLES']][[1]]$SAMPLE_TYPE) %in% 'SAMP')]
-samples_tbl <- filter(samples, Sample %in% samplesTaken) %>%
+samples_tbl <- dplyr::filter(samples, Sample %in% samplesTaken) %>%
   distinct(`Sample Name`, .keep_all=TRUE) %>%
   dplyr::select(`Sample Name`, Description)
 
@@ -85,12 +85,12 @@ samples_tbl <- filter(samples, Sample %in% samplesTaken) %>%
 fishTaxa <- dplyr::filter(params[['userDataRMD']][['FISH']][[1]], SAMPLE_TYPE == 'FISH') %>%
   dplyr::select(LINE, PARAMETER, RESULT) 
 # First get fish counts
-fishCounts <- filter(fishTaxa, str_detect(PARAMETER, "COUNT_")) %>%
+fishCounts <- dplyr::filter(fishTaxa, str_detect(PARAMETER, "COUNT_")) %>%
   group_by(LINE) %>%
   summarise(Count = sum(as.numeric(RESULT)))
 # then fix taxa and join
-fishTaxa <- filter(fishTaxa,  PARAMETER == 'NAME_COM') %>%
-  rename(`Common Name` = RESULT) %>%
+fishTaxa <- dplyr::filter(fishTaxa,  PARAMETER == 'NAME_COM') %>%
+  dplyr::rename(`Common Name` = RESULT) %>%
   left_join(fishCounts, by= 'LINE') %>%
   dplyr::select(`Common Name`, Count) %>%
   arrange(desc(Count))

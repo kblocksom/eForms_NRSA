@@ -1,7 +1,27 @@
+packages:
+- cran_mirror: https://cran.r-project.org
+  num_threads: 2
+  packages:
+    - name: shinyjs
+    - name: reshape2
+    - name: plyr
+#    - name: tidyverse
+    - name: tibble
+    - name: dplyr
+    - name: purrr
+    - name: Hmisc
+    - name: RJSONIO
+    - name: stringr
+    - name: writeexl
+    - name: zip
+    - name: shinyBS
+#    - name: cairo
+    - name: kableExtra
+    - name: knitr
+---    
 applications:
 - name: eForms_NRSA
   buildpacks: https://github.com/cloudfoundry/r-buildpack.git
   command: R --no-save --gui-none < /app/startscript.r
   instances: 1
   memory: 1G
-  
