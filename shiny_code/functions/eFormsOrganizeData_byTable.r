@@ -173,7 +173,7 @@ organizePhab_W <- function(parsedIn){
     select(SAMPLE_TYPE,PARAMETER,TRANSECT,RESULT)
   
   # bank measurements
-  bank <- filter(parsedIn.long, str_detect(variable.1,"WETWID|BARWID|BANKWID|BANKHT|INCISED") & variable.1 %nin% c('0_WETWIDTH','5_WETWIDTH','7_WETWIDTH','0_BARWIDTH','5_BARWIDTH','7_BARWIDTH')) %>%
+  bank <- filter(parsedIn.long, str_detect(variable.1,"WETWID|BARWID|BANKWID|BANKHT|INCISED") & !(variable.1 %in% c('0_WETWIDTH','5_WETWIDTH','7_WETWIDTH','0_BARWIDTH','5_BARWIDTH','7_BARWIDTH'))) %>%
     mutate(SAMPLE_TYPE='BANKW',PARAMETER=variable.1) %>%
     select(SAMPLE_TYPE,PARAMETER,TRANSECT,RESULT)
   
