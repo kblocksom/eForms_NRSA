@@ -19,7 +19,7 @@ suppressPackageStartupMessages(library(kableExtra))
 
 
 
-```{r, echo=FALSE}
+```{r verif, echo=FALSE}
 
 include_graphics("NRSA_logo_sm.jpg")
 
@@ -34,8 +34,12 @@ verification_tbl <- dplyr::filter(verification, !(PARAMETER %in% c('ACTUAL_LAT_D
                                    "LOC_NAME"='Location',"VALXSITE"='Sample Type', 
                                    "ADD_SITE_CHAR"='Site Characteristics',
                                    "GEN_COM"='General Site Comments',"TRCHLEN"= 'Reach Length' ,
-                                   "CREW_LEADER"='Crew Leader')) 
+                                   "CREW_LEADER"='Crew Leader')) %>%
+  mutate(RESULT=ifelse(PARAMETER=='Reach Length',paste(RESULT,'m',sep=' '),RESULT))
+```
 
+
+```{r field,echo=F}
 ## Field parameters
 field <- dplyr::filter(params[['userDataRMD']][['FIELD']][[1]], PARAMETER %in% c("DO_DISPLAYED_UNITS" ,"LOCATION","TIME" ,"DO","TEMPERATURE" ,
                                                                                  "PH","CONDUCTIVITY","CORRECTED")) 
@@ -53,6 +57,8 @@ field_tbl <- dplyr::filter(field, PARAMETER %in% c('TEMPERATURE','DO','PH', 'CON
   arrange(group) %>%
   dplyr::select(-group)
 
+```
+```{r assess, echo=FALSE}
 ## Assessment info
 assessment <- dplyr::filter(params[['userDataRMD']][['ASSESSMENT']][[1]], PARAMETER %in% c('WEATHER','CONDITIONS','BEAVER_FLOW_MOD')) %>% 
   dplyr::select(PARAMETER, RESULT) %>%
@@ -63,7 +69,8 @@ assessment <- dplyr::filter(params[['userDataRMD']][['ASSESSMENT']][[1]], PARAME
   arrange(group) %>%
   dplyr::select(-group) %>%
   dplyr::filter(PARAMETER!='Conditions')
-
+```
+```{r samples, echo=FALSE}
 ## samples collected
 # generic samples and description
 samples <- tibble::tibble(Sample = c('CHEM', 'WCHL', 'PERI', 'PCHL', 'PBIO', 'PDNA', 'MICX', 'ENTE','BENT'),
@@ -75,25 +82,42 @@ samples <- tibble::tibble(Sample = c('CHEM', 'WCHL', 'PERI', 'PCHL', 'PBIO', 'PD
                                   'eDNA fragments in water','Analyzed for algal toxins in water','*E.coli* and enterococci',
                                   'Benthic macroinvertebrate composition'))
 # filter to only what was collected
-samplesTaken <- unique(params[['userDataRMD']][['SAMPLES']][[1]]$SAMPLE_TYPE)[!(unique(params[['userDataRMD']][['SAMPLES']][[1]]$SAMPLE_TYPE) %in% 'SAMP')]
-samples_tbl <- dplyr::filter(samples, Sample %in% samplesTaken) %>%
+samplesData <- unique(params[['userDataRMD']][['SAMPLES']][[1]]$SAMPLE_TYPE)[!(unique(params[['userDataRMD']][['SAMPLES']][[1]]$SAMPLE_TYPE) %in% 'SAMP')]
+
+samplesNotColl <- params[['userDataRMD']][['SAMPLES']][[1]]$SAMPLE_TYPE[params[['userDataRMD']][['SAMPLES']][[1]]$PARAMETER=='NOT_COLLECTED']
+
+samplesTaken <- setdiff(samplesData, samplesNotColl) 
+
+samples_tbl <- dplyr::filter(samples, (Sample %in% samplesTaken)) %>%
   distinct(`Sample Name`, .keep_all=TRUE) %>%
   dplyr::select(`Sample Name`, Description)
+```
 
-
+```{r fish, echo=F}
 ## Fish 
-fishTaxa <- dplyr::filter(params[['userDataRMD']][['FISH']][[1]], SAMPLE_TYPE == 'FISH') %>%
-  dplyr::select(LINE, PARAMETER, RESULT) 
-# First get fish counts
-fishCounts <- dplyr::filter(fishTaxa, str_detect(PARAMETER, "COUNT_")) %>%
-  group_by(LINE) %>%
-  summarise(Count = sum(as.numeric(RESULT)))
-# then fix taxa and join
-fishTaxa <- dplyr::filter(fishTaxa,  PARAMETER == 'NAME_COM') %>%
-  dplyr::rename(`Common Name` = RESULT) %>%
-  left_join(fishCounts, by= 'LINE') %>%
-  dplyr::select(`Common Name`, Count) %>%
-  arrange(desc(Count))
+# Add code to handle cases where fish not collected
+if(exists("params[['userDatRMD']][['FISH']]")){
+
+  fishTaxa <- dplyr::filter(params[['userDataRMD']][['FISH']][[1]], SAMPLE_TYPE == 'FISH') %>%
+    dplyr::select(LINE, PARAMETER, RESULT) 
+  # First get fish counts
+  fishCounts <- dplyr::filter(fishTaxa, str_detect(PARAMETER, "COUNT_")) %>%
+    group_by(LINE) %>%
+    summarise(Count = sum(as.numeric(RESULT)))
+  # then fix taxa and join
+  fishTaxa <- dplyr::filter(fishTaxa,  PARAMETER == 'NAME_COM') %>%
+    dplyr::rename(`Common Name` = RESULT) %>%
+    left_join(fishCounts, by= 'LINE') %>%
+    dplyr::select(`Common Name`, Count) %>%
+    arrange(desc(Count))
+}else{
+  fishTaxa <- dplyr::filter(params[['userDataRMD']][['FISHGEAR']][[1]], PARAMETER %in% c('FISH_PROTOCOL','PROTOCOL_COMMENT')) %>%
+    dplyr::select(PARAMETER, RESULT) %>%
+    mutate(PARAMETER = recode(PARAMETER,"FISH_PROTOCOL"='Fish Protocol Result', 
+                            "PROTOCOL_COMMENT"= 'Comment')) %>%
+    dplyr::rename('Reason'=PARAMETER, 'Comment'=RESULT)
+}
+
 ```
 
 ##National Rivers and Streams Assessment Landowner Report
@@ -130,13 +154,18 @@ kable(samples_tbl, align=c('l','r')) %>%
   kable_styling(bootstrap_options = 'condensed', full_width = F, position = "float_left") %>%
   column_spec(1, border_right = T, width = "15em") %>%
   column_spec(2, width = "15em")
-
-kable(fishTaxa, align=c('l','r')) %>%
-  add_header_above(c("Fish Caught" = 2)) %>%
-  kable_styling(bootstrap_options = 'condensed', full_width = F, position = "float_left") %>%
-  column_spec(1, border_right = T, width = "12em") %>%
-  column_spec(2, width = "8em")
-
+```
+```{r row 2 tables 2, echo=F}
+if(exists("params[['userDatRMD']][['FISH']]")){
+  kable(fishTaxa, align=c('l','r')) %>%
+    add_header_above(c("Fish Caught" = 2)) %>%
+    kable_styling(bootstrap_options = 'condensed', full_width = F, position = "float_left") %>%
+    column_spec(1, border_right = T, width = "12em") %>%
+    column_spec(2, width = "8em")
+}else{
+  kable(fishTaxa, col.names = c('Fish Not Collected', ''), align=c('l','r')) %>%
+    kable_styling(bootstrap_options = 'condensed', full_width = F, position = 'float_left') 
+}
 ```
 
 
