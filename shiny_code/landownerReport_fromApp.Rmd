@@ -41,15 +41,15 @@ verification_tbl <- dplyr::filter(verification, !(PARAMETER %in% c('ACTUAL_LAT_D
 
 ```{r field,echo=F}
 ## Field parameters
-field <- dplyr::filter(params[['userDataRMD']][['FIELD']][[1]], PARAMETER %in% c("DO_DISPLAYED_UNITS" ,"LOCATION","TIME" ,"DO","TEMPERATURE" ,
+field <- dplyr::filter(params[['userDataRMD']][['FIELD']][[1]], PARAMETER %in% c("LOCATION","TIME" ,"DO","TEMPERATURE" ,
                                                                                  "PH","CONDUCTIVITY","CORRECTED")) 
-DOunits <- as.character(filter(field, PARAMETER =='DO_DISPLAYED_UNITS')$RESULT)
+
 CONDUCTIVITYunits <- ifelse(as.character(filter(field, PARAMETER == 'CORRECTED')$RESULT)=='Y', 'uS/cm @ 25C','uS/cm')
 
 field_tbl <- dplyr::filter(field, PARAMETER %in% c('TEMPERATURE','DO','PH', 'CONDUCTIVITY')) %>%
   dplyr::select(PARAMETER, RESULT) %>%
   mutate(group = PARAMETER, #for rearranging
-         RESULT = ifelse(PARAMETER == 'DO', paste(RESULT,DOunits,sep=' '),RESULT),
+         RESULT = ifelse(PARAMETER == 'DO', paste(RESULT,'mg/L',sep=' '),RESULT),
          RESULT = ifelse(PARAMETER == 'TEMPERATURE', paste(RESULT,'C',sep=' '),RESULT),
          RESULT = ifelse(PARAMETER == 'CONDUCTIVITY', paste(RESULT,CONDUCTIVITYunits,sep=' '),RESULT)) %>%
   mutate(group = recode(group, 'TEMPERATURE'=1, 'DO'=2, 'PH'=3,'CONDUCTIVITY'=4),
