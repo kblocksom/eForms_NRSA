@@ -84,7 +84,7 @@ samples <- tibble::tibble(Sample = c('CHEM', 'WCHL', 'PERI', 'PCHL', 'PBIO', 'PD
 # filter to only what was collected
 samplesData <- unique(params[['userDataRMD']][['SAMPLES']][[1]]$SAMPLE_TYPE)[!(unique(params[['userDataRMD']][['SAMPLES']][[1]]$SAMPLE_TYPE) %in% 'SAMP')]
 
-samplesNotColl <- params[['userDataRMD']][['SAMPLES']][[1]]$SAMPLE_TYPE[params[['userDataRMD']][['SAMPLES']][[1]]$PARAMETER=='NOT_COLLECTED']
+samplesNotColl <- params[['userDataRMD']][['SAMPLES']][[1]]$SAMPLE_TYPE[params[['userDataRMD']][['SAMPLES']][[1]]$PARAMETER=='NOT_COLLECTED' & params[['userDataRMD']][['SAMPLES']][[1]]$RESULT=='Y']
 
 samplesTaken <- setdiff(samplesData, samplesNotColl) 
 
@@ -96,10 +96,12 @@ samples_tbl <- dplyr::filter(samples, (Sample %in% samplesTaken)) %>%
 ```{r fish, echo=F}
 ## Fish 
 # Add code to handle cases where fish not collected
-if(exists("params[['userDatRMD']][['FISH']]")){
 
   fishTaxa <- dplyr::filter(params[['userDataRMD']][['FISH']][[1]], SAMPLE_TYPE == 'FISH') %>%
-    dplyr::select(LINE, PARAMETER, RESULT) 
+    dplyr::select(LINE, PARAMETER, RESULT) %>%
+    dplyr::filter(PARAMETER!='REVIEW')
+  
+if(nrow(fishTaxa)>0){
   # First get fish counts
   fishCounts <- dplyr::filter(fishTaxa, str_detect(PARAMETER, "COUNT_")) %>%
     group_by(LINE) %>%
