@@ -107,13 +107,13 @@ if(nrow(fishTaxa)>0){
     group_by(LINE) %>%
     summarise(Count = sum(as.numeric(RESULT)))
   # then fix taxa and join
-  fishTaxa <- dplyr::filter(fishTaxa,  PARAMETER == 'NAME_COM') %>%
+  fishTaxa.1 <- dplyr::filter(fishTaxa,  PARAMETER == 'NAME_COM') %>%
     dplyr::rename(`Common Name` = RESULT) %>%
     left_join(fishCounts, by= 'LINE') %>%
     dplyr::select(`Common Name`, Count) %>%
     arrange(desc(Count))
 }else{
-  fishTaxa <- dplyr::filter(params[['userDataRMD']][['FISHGEAR']][[1]], PARAMETER %in% c('FISH_PROTOCOL','PROTOCOL_COMMENT')) %>%
+  fishTaxa.1 <- dplyr::filter(params[['userDataRMD']][['FISHGEAR']][[1]], PARAMETER %in% c('FISH_PROTOCOL','PROTOCOL_COMMENT')) %>%
     dplyr::select(PARAMETER, RESULT) %>%
     mutate(PARAMETER = recode(PARAMETER,"FISH_PROTOCOL"='Fish Protocol Result', 
                             "PROTOCOL_COMMENT"= 'Comment')) %>%
@@ -158,14 +158,14 @@ kable(samples_tbl, align=c('l','r')) %>%
   column_spec(2, width = "15em")
 ```
 ```{r row 2 tables 2, echo=F}
-if(exists("params[['userDatRMD']][['FISH']]")){
-  kable(fishTaxa, align=c('l','r')) %>%
+if(nrow(fishTaxa)>0){
+  kable(fishTaxa.1, align=c('l','r')) %>%
     add_header_above(c("Fish Caught" = 2)) %>%
     kable_styling(bootstrap_options = 'condensed', full_width = F, position = "float_left") %>%
     column_spec(1, border_right = T, width = "12em") %>%
     column_spec(2, width = "8em")
 }else{
-  kable(fishTaxa, col.names = c('Fish Not Collected', ''), align=c('l','r')) %>%
+  kable(fishTaxa.1, col.names = c('Fish Not Collected', ''), align=c('l','r')) %>%
     kable_styling(bootstrap_options = 'condensed', full_width = F, position = 'float_left') 
 }
 ```
