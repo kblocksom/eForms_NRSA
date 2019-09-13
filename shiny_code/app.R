@@ -149,8 +149,9 @@ server <- function(input, output, session) {
   
   # Send input data to html report
   
-  output$report <- downloadHandler(
-    paste(unique(userData$finalOut[[1]][[1]]$SITE_ID),unique(userData$finalOut[[1]][[1]]$VISIT_NO),"LandownerReport.html",sep="_"),
+  output$report <- downloadHandler(filename = function(){
+    paste(str_extract(filesInDir()[1],"[:alnum:]+\\_[:alpha:]+\\_[:alnum:]+\\_[:alnum:]\\_"),"LandownerReport.html",sep="_")
+    },
     content= function(file){
       tempReport <- normalizePath('landownerReport_fromApp.Rmd')
       imageToSend1 <- normalizePath('NRSA_logo_sm.jpg')  # choose image name
