@@ -16,8 +16,9 @@ karenOrganizationShiny <- function(pathlist,filelist){
 
     
     # This step parses data and then organizes data in each file
-    if(str_detect(fileName,'TRACKING',negate=TRUE)){
-    finalOut[[fileName %>% 
+    #if(str_detect(fileName,'TRACKING',negate=TRUE)){
+    if(grepl('TRACKING',fileName,ignore.case=TRUE)==FALSE){
+      finalOut[[fileName %>% 
                 str_replace("[:alnum:]+\\_[:alpha:]+\\_[:alnum:]+\\_[:alnum:]\\_",'') %>%
                 str_replace('.json*','') %>% 
                 str_replace('.*/','') ]] <- eFormsParseJSON(filePath) %>%
