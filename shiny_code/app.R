@@ -13,7 +13,7 @@ ui <- fluidPage(
    
    shinyjs::useShinyjs(),
    # Application title
-   navbarPage("NRSA 2018-19 Rapid Data Extraction and Reporting Tool (v. 1.3)",
+   navbarPage("NRSA 2018-19 Rapid Data Extraction and Reporting Tool (v. 1.4)",
               tabPanel(span('About',title='How to use this Shiny app'),
                        fluidRow(column(2, img(src='oregon_stream.png', align='left')),
                                 column(6,h2(strong('Tool Overview')), offset=1,

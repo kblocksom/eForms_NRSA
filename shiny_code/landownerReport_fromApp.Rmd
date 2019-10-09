@@ -24,12 +24,13 @@ suppressPackageStartupMessages(library(kableExtra))
 include_graphics("NRSA_logo_sm.jpg")
 
 verification <- dplyr::filter(params[['userDataRMD']][['VERIFICATION']][[1]], PARAMETER %in% c('SITE_ID','VISIT_NO', "DATE_COL","LOC_NAME","CREW",
-                                                                                               "ACTUAL_LAT_DD","ACTUAL_LON_DD","VALXSITE",'ADD_SITE_CHAR',
+                                                                                               "LAT_DD","LON_DD","VALXSITE",'ADD_SITE_CHAR',
                                                                                                "GEN_COM","DRCTNS","RCHWIDTH","TRCHLEN","CREW_LEADER")) %>%
   select(PARAMETER, RESULT)
-verification_tbl <- dplyr::filter(verification, !(PARAMETER %in% c('ACTUAL_LAT_DD','ACTUAL_LON_DD',
-                                                            "CREW","DRCTNS","RCHWIDTH" ))) %>%
-  mutate(PARAMETER = dplyr::recode(PARAMETER, "SITE_ID"='Site ID',"VISIT_NO"='Visit Number',
+verification_tbl <- dplyr::filter(verification, !(PARAMETER %in% c("CREW","DRCTNS","RCHWIDTH" ))) %>%
+  mutate(PARAMETER = dplyr::recode(PARAMETER, "SITE_ID"='Site ID',"LAT_DD"="Latitude",
+                                   "LON_DD"="Longitude",
+                                   "VISIT_NO"='Visit Number',
                                    "DATE_COL"='Sample Date',
                                    "LOC_NAME"='Location',"VALXSITE"='Sample Type', 
                                    "ADD_SITE_CHAR"='Site Characteristics',
