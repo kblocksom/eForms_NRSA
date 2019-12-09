@@ -163,7 +163,7 @@ organizePhab_W <- function(parsedIn){
                                                 "RC_DIST_LB","RT_DIST_LB","LF_DEPTH",
                                                 "LC_DEPTH","CT_DEPTH","RC_DEPTH","RT_DEPTH",
                                                 "LF_SIZE_CLS","LC_SIZE_CLS","CT_SIZE_CLS",
-                                                "RC_SIZE_CLS","RT_SIZE_CLS","LC_EMBED","RT_EMBED"))) %>%
+                                                "RC_SIZE_CLS","RT_SIZE_CLS","LC_EMBED","RT_EMBED","CT_EMBED","LF_EMBED","RC_EMBED"))) %>%
     mutate(SAMPLE_TYPE='CROSSSECW',TRANSDIR=substring(variable.1,1,2),
            PARAMETER=substring(variable.1,4,nchar(variable.1))) %>%
     select(SAMPLE_TYPE,PARAMETER,TRANSECT,TRANSDIR,RESULT)
