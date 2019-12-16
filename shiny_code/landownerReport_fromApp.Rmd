@@ -106,7 +106,7 @@ if(nrow(fishTaxa)>0){
   # First get fish counts
   fishCounts <- dplyr::filter(fishTaxa, str_detect(PARAMETER, "COUNT_")) %>%
     group_by(LINE) %>%
-    summarise(Count = sum(as.numeric(RESULT)))
+    summarise(Count = sum(as.numeric(RESULT),na.rm=T))
   # then fix taxa and join
   fishTaxa.1 <- dplyr::filter(fishTaxa,  PARAMETER == 'NAME_COM') %>%
     dplyr::rename(`Common Name` = RESULT) %>%
