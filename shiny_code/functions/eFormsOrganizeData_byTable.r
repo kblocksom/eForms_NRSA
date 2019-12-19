@@ -22,17 +22,17 @@ eFormsOrganize_byTable <- function(rawData){
   switch(sampletype,
     FISH = {rr <- organizeFish(parsedData)},
     FISHGEAR = {rr <- organizeFishGear(parsedData)},
-    BENTHIC = {rr = organizeBenthic(parsedData)},
-    VERIFICATION = {rr = organizeVerification(parsedData)},
-    FIELD = {rr = organizeField(parsedData)},
-    SAMPLES = {rr = organizeSamples(parsedData)},
-    PHABW = {rr = organizePhab_W(parsedData)},
-    PHABB = {rr = organizePhab_B(parsedData)},
-    ASSESSMENT = {rr = organizeAssessment(parsedData)},
-    CONSTRAINT = {rr = organizeConstraint(parsedData)},
-    DISCHARGE = {rr = organizeDischarge(parsedData)},
-    SLOPE = {rr = organizeSlope(parsedData)},
-    TORRENT = {rr = organizeTorrent(parsedData)}
+    BENTHIC = {rr <- organizeBenthic(parsedData)},
+    VERIFICATION = {rr <- organizeVerification(parsedData)},
+    FIELD = {rr <- organizeField(parsedData)},
+    SAMPLES = {rr <- organizeSamples(parsedData)},
+    PHABW = {rr <- organizePhab_W(parsedData)},
+    PHABB = {rr <- organizePhab_B(parsedData)},
+    ASSESSMENT = {rr <- organizeAssessment(parsedData)},
+    CONSTRAINT = {rr <- organizeConstraint(parsedData)},
+    DISCHARGE = {rr <- organizeDischarge(parsedData)},
+    SLOPE = {rr <- organizeSlope(parsedData)},
+    TORRENT = {rr <- organizeTorrent(parsedData)}
   )
   
   # PHAB sample types create lists of data frames
