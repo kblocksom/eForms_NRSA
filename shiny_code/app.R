@@ -110,10 +110,8 @@ server <- function(input, output, session) {
   
   # Download Excel File
   output$downloadxlsx<- downloadHandler(filename = function() { 
-    paste(grep("[[:alnum:]]+[[:punct:]][[:alpha:]]+[[:punct:]][:alnum:]+[[:punct:]][[:alnum:]][[:punct:]]", filesInDir()[1], value = TRUE),
-          "summary.xlsx", sep = '')
-    # paste(str_extract(filesInDir()[1],"[:alnum:]+\\_[:alpha:]+\\_[:alnum:]+\\_[:alnum:]\\_"),
-    #        "summary.xlsx")
+    paste(str_extract(filesInDir()[1],"[:alnum:]+\\_[:alpha:]+\\_[:alnum:]+\\_[:alnum:]\\_"),
+           "summary.xlsx")
     },
     content = function(file) {
       write_xlsx(karenWriteShiny(as.vector(input$directory$name), userData$finalOut), path = file)}
@@ -123,10 +121,7 @@ server <- function(input, output, session) {
   # Download CSV
   
   output$downloadcsv <- downloadHandler( filename = function() {
-    #m <- regexpr("[[:alnum:]]+[[:punct:]][[:alpha:]]+[[:punct:]][:alnum:]+[[:punct:]][[:alnum:]][[:punct:]]", filesInDir()[1])
-    paste(regmatches(filesInDir()[1], regexpr("[[:alnum:]]+[[:punct:]][[:alpha:]]+[[:punct:]][:alnum:]+[[:punct:]][[:alnum:]][[:punct:]]", filesInDir()[1])),
-          "csvFiles.zip", sep='')
-    # paste(str_extract(filesInDir()[1],"[:alnum:]+\\_[:alpha:]+\\_[:alnum:]+\\_[:alnum:]\\_"), "csvFiles.zip", sep="")
+    paste(str_extract(filesInDir()[1],"[:alnum:]+\\_[:alpha:]+\\_[:alnum:]+\\_[:alnum:]\\_"), "csvFiles.zip", sep="")
   },
   content = function(fname) {
     fs <- c()
@@ -136,8 +131,7 @@ server <- function(input, output, session) {
     for (i in 1:length(z)) {
       
       path <- paste0(#path1()[1], '/data/',
-        regmatches(filesInDir()[1], regexpr("[[:alnum:]]+[[:punct:]][[:alpha:]]+[[:punct:]][:alnum:]+[[:punct:]][[:alnum:]][[:punct:]]", filesInDir()[1])),
-#        str_extract(filesInDir()[1],"[:alnum:]+\\_[:alpha:]+\\_[:alnum:]+\\_[:alnum:]\\_"),
+        str_extract(filesInDir()[1],"[:alnum:]+\\_[:alpha:]+\\_[:alnum:]+\\_[:alnum:]\\_"),
         names(z)[[i]], ".csv")
       fs <- c(fs, path)
       write.csv(data.frame(z[[i]]), path, row.names=F)
@@ -158,10 +152,7 @@ server <- function(input, output, session) {
   # Send input data to html report
   
   output$report <- downloadHandler(filename = function(){
-    # m <- regexpr("[[:alnum:]]+[[:punct:]][[:alpha:]]+[[:punct:]][:alnum:]+[[:punct:]][[:alnum:]][[:punct:]]", filesInDir()[1])
-    paste(regmatches(filesInDir()[1], regexpr("[[:alnum:]]+[[:punct:]][[:alpha:]]+[[:punct:]][:alnum:]+[[:punct:]][[:alnum:]][[:punct:]]", filesInDir()[1])),
-          "LandownerReport.html", sep='_')
-#    paste(str_extract(filesInDir()[1],"[:alnum:]+\\_[:alpha:]+\\_[:alnum:]+\\_[:alnum:]\\_"),"LandownerReport.html",sep="_")
+    paste(str_extract(filesInDir()[1],"[:alnum:]+\\_[:alpha:]+\\_[:alnum:]+\\_[:alnum:]\\_"),"LandownerReport.html",sep="_")
     },
     content= function(file){
       tempReport <- normalizePath('landownerReport_fromApp.Rmd')
