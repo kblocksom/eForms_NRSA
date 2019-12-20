@@ -75,16 +75,12 @@ ui <- fluidPage(
 # Define server logic required to draw a histogram
 server <- function(input, output, session) {
    
-  # display the loading feature until data loads into app
-  #load_data()
-  
   # Reactive Value to store all user data
   userData <- reactiveValues()
   
   
   # Bring in user data when they select directory
   # volumes <- getVolumes()
-  # shinyDirChoose(input, 'directory', roots=volumes, session=session)
   path1 <- reactive({
     path_list <- as.vector(input$directory$datapath)
   })
@@ -125,12 +121,11 @@ server <- function(input, output, session) {
   },
   content = function(fname) {
     fs <- c()
-    #tmpdir <- tempdir()
-    z <- karenWriteShiny(as.vector(input$directory$name), userData$finalOut) 
-    #dir.create(paste0(path1()[1], '/data/'))
+     z <- karenWriteShiny(as.vector(input$directory$name), userData$finalOut) 
+
     for (i in 1:length(z)) {
       
-      path <- paste0(#path1()[1], '/data/',
+      path <- paste0(
         str_extract(filesInDir()[1],"[:alnum:]+\\_[:alpha:]+\\_[:alnum:]+\\_[:alnum:]\\_"),
         names(z)[[i]], ".csv")
       fs <- c(fs, path)
