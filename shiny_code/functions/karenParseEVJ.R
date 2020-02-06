@@ -39,7 +39,9 @@ karenWriteShiny <- function(filelist, finalList){
     
     others <- finalList[!(names(finalList) %in% specialCases)]
     phab_channel <- finalList[specialCases]
+    #phab_channel <- sapply(phab_channel, function(x) x$channel, simplify=TRUE)
     phab_channel <- map_df(phab_channel, 'channel')
+    # print(phab_channel)
 
     phab_chanrip <- finalList[specialCases]
     phab_chanrip <- map_df(phab_chanrip, 'chanrip')
