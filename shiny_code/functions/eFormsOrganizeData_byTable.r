@@ -65,7 +65,7 @@ organizeFish <- function(parsedIn){
     aa$PAGE <- '1'
     aa$LINE <- '0'
 
-    varLong <- names(aa)[names(aa) %nin% c('PAGE','LINE')]
+    varLong <- names(aa)[!(names(aa) %in% c('PAGE','LINE'))]
     
     aa.long <- reshape(aa, idvar = c('PAGE','LINE'), varying = varLong, times = varLong,
                        v.names = 'RESULT', timevar = 'PARAMETER', direction = 'long')

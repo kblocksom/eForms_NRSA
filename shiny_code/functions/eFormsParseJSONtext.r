@@ -9,8 +9,8 @@
 #          argument is a string of zero characters ("").
 #
 
-require(RJSONIO)
-require(RUnit)
+# require(RJSONIO)
+# require(RUnit)
 
 eFormsParseJSONtext <- function(text)
 # Attempts to parse the text string as JSON.  Returns a named list containing 

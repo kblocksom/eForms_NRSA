@@ -3,11 +3,8 @@ packages:
   num_threads: 4
   packages:
     - name: shinyjs
-    - name: reshape2
-    - name: plyr
-#    - name: tidyverse
-    - name: tibble
-    - name: dplyr
+#    - name: reshape2
+#    - name: dplyr
     - name: purrr
 #    - name: Hmisc
     - name: RJSONIO
@@ -15,10 +12,9 @@ packages:
     - name: writexl
     - name: zip
     - name: shinyBS
-#    - name: cairo
     - name: kableExtra
     - name: knitr
-    - name: magick
+#    - name: magick
 ---    
 applications:
 - name: eForms_NRSA
