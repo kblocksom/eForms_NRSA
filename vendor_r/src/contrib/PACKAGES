@@ -837,7 +837,7 @@ MD5sum: 819e2371b7765711bb07bd8afd2bd413
 NeedsCompilation: yes
 
 Package: rgl
-Version: 0.100.47
+Version: 0.100.50
 Depends: R (>= 3.2.0)
 Imports: graphics, grDevices, stats, utils, htmlwidgets, htmltools, knitr,
          jsonlite (>= 0.9.20), shiny, magrittr, crosstalk, manipulateWidget (>=
@@ -845,7 +845,7 @@ Imports: graphics, grDevices, stats, utils, htmlwidgets, htmltools, knitr,
 Suggests: MASS, rmarkdown, deldir, orientlib, lattice, misc3d, rstudioapi, magick,
          plotrix (>= 3.7-3), tripack, interp, alphashape3d, tcltk
 License: GPL
-MD5sum: 99d51d2fb5e4cd0585d91dd9da7573d5
+MD5sum: 37ef932763c3fad286ba4f1b36e63055
 NeedsCompilation: yes
 
 Package: RJSONIO
@@ -1108,12 +1108,12 @@ MD5sum: 33de0b2841c49e84f8eb5a7b2a8222b8
 NeedsCompilation: yes
 
 Package: V8
-Version: 3.0.1
+Version: 3.0.2
 Imports: Rcpp (>= 0.12.12), jsonlite (>= 1.0), curl (>= 1.0), utils
 LinkingTo: Rcpp
 Suggests: testthat, knitr, rmarkdown
 License: MIT + file LICENSE
-MD5sum: 45d437980db89771b7917d3e6b0f2b8c
+MD5sum: c565d33e3f55dddf23b884feed37c544
 NeedsCompilation: yes
 
 Package: vctrs

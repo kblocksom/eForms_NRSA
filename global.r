@@ -10,10 +10,10 @@ library(writexl)
 library(zip)
 library(shinyBS)
 
-source('functions/eFormsParseJSON_basic.r')
-source('functions/eFormsParseJSONtext.r') 
-source('functions/eFormsOrganizeData_byTable.r')
-source('functions/karenParseEVJ.R')
+source('eForms_NRSA/functions/eFormsParseJSON_basic.r')
+source('eForms_NRSA/functions/eFormsParseJSONtext.r') 
+source('eForms_NRSA/functions/eFormsOrganizeData_byTable.r')
+source('eForms_NRSA/functions/karenParseEVJ.R')
 
 
-metadata <- readRDS("data/metadata.rds")
+metadata <- readRDS("eForms_NRSA/data/metadata.rds")
