@@ -1,0 +1,7 @@
+---
+applications:
+- name: eformsnrsa-dev
+  memory: 5000M
+  disk quota: 2000M
+  routes:
+    - route: eformsnrsa-dev.app.cloud.gov
