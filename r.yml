@@ -11,9 +11,4 @@ packages:
     - name: kableExtra
     - name: knitr
     - name: magrittr
----    
-applications:
-- name: eForms_NRSA
-  command: R --no-save --gui-none < /app/startscript.r
-  instances: 1
-  memory: 1G
+
