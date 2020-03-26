@@ -10,12 +10,12 @@ source('global.r')
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
-   
+   theme="style.css",
    shinyjs::useShinyjs(),
    # Application title
    navbarPage("NRSA 2018-19 Rapid Data Extraction and Reporting Tool (v. 1.4.2)",
               tabPanel(span('About',title='How to use this Shiny app'),
-                       fluidRow(column(2, img(src='oregon_stream.png', align='left')),
+                       fluidRow(column(1, img(src='oregon_stream.png', align='center')),
                                 column(6,h2(strong('Tool Overview')), offset=1,
                                        p('The Rapid Data Extraction and Reporting Tool expedites data availability
                                                             to field crews and offers preliminary end-of-day site reports to landowners to 
