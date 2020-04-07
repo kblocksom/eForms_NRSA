@@ -13,6 +13,6 @@ library(shinyBS)
 source('functions/eFormsParseJSON_basic.r')
 source('functions/eFormsParseJSONtext.r')
 source('functions/eFormsOrganizeData_byTable.r')
-source('functions/karenParseEVJ.R')
+source('functions/parseData.R')
 
 metadata <- readRDS("data/metadata.rds")
