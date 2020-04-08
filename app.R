@@ -106,8 +106,8 @@ server <- function(input, output, session) {
   
   # Download Excel File
   output$downloadxlsx<- downloadHandler(filename = function() { 
-    paste(str_extract(filesInDir()[1],"[:alnum:]+\\_[:alpha:]+\\_[:alnum:]+\\_[:alnum:]\\_"),
-           "summary.xlsx")
+    paste(str_extract(filesInDir()[1],"[:alnum:]+[:punct:][:alpha:]+[:punct:][:alnum:]+[:punct:][:alnum:][:punct:]"),
+           "summary.xlsx",sep='')
     },
     content = function(file) {
       write_xlsx(karenWriteShiny(as.vector(input$directory$name), userData$finalOut), path = file)}
@@ -117,7 +117,7 @@ server <- function(input, output, session) {
   # Download CSV
   
   output$downloadcsv <- downloadHandler( filename = function() {
-    paste(str_extract(filesInDir()[1],"[:alnum:]+\\_[:alpha:]+\\_[:alnum:]+\\_[:alnum:]\\_"), "csvFiles.zip", sep="")
+    paste(str_extract(filesInDir()[1],"[:alnum:]+[:punct:][:alpha:]+[:punct:][:alnum:]+[:punct:][:alnum:][:punct:]"), "csvFiles.zip", sep="")
   },
   content = function(fname) {
     fs <- c()
@@ -126,7 +126,7 @@ server <- function(input, output, session) {
     for (i in 1:length(z)) {
       
       path <- paste0(
-        str_extract(filesInDir()[1],"[:alnum:]+\\_[:alpha:]+\\_[:alnum:]+\\_[:alnum:]\\_"),
+        str_extract(filesInDir()[1],"[:alnum:]+[:punct:][:alpha:]+[:punct:][:alnum:]+[:punct:][:alnum:][:punct:]"),
         names(z)[[i]], ".csv")
       fs <- c(fs, path)
       write.csv(data.frame(z[[i]]), path, row.names=F)
@@ -147,7 +147,7 @@ server <- function(input, output, session) {
   # Send input data to html report
   
   output$report <- downloadHandler(filename = function(){
-    paste(str_extract(filesInDir()[1],"[:alnum:]+\\_[:alpha:]+\\_[:alnum:]+\\_[:alnum:]\\_"),"LandownerReport.html",sep="_")
+    paste(str_extract(filesInDir()[1],"[:alnum:]+[:punct:][:alpha:]+[:punct:][:alnum:]+[:punct:][:alnum:][:punct:]"),"LandownerReport.html",sep="")
     },
     content= function(file){
       tempReport <- normalizePath('landownerReport_fromApp.Rmd')
@@ -170,5 +170,5 @@ server <- function(input, output, session) {
 }
 
 # Run the application 
-shinyApp(ui = ui, server = server)
-
+ shinyApp(ui = ui, server = server)
+#shiny::runApp(list(ui = ui, server = server), host="0.0.0.0", port=strtoi(Sys.getenv("PORT")))
