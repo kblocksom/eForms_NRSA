@@ -15,7 +15,7 @@ ui <- fluidPage(
    # Application title
    navbarPage("NRSA 2018-19 Rapid Data Extraction and Reporting Tool (v. 1.4.2)",
               tabPanel(span('About',title='How to use this Shiny app'),
-                       fluidRow(column(1, img(src='oregon_stream.png', align='center')),
+                       fluidRow(column(2, imageOutput("streamImage")),
                                 column(6,h2(strong('Tool Overview')), offset=1,
                                        p('The Rapid Data Extraction and Reporting Tool expedites data availability
                                                             to field crews and offers preliminary end-of-day site reports to landowners to 
@@ -74,7 +74,16 @@ ui <- fluidPage(
 
 # Define server logic required to draw a histogram
 server <- function(input, output, session) {
-   
+  # render stream image
+  output$streamImage <- renderImage({
+    filename <- normalizePath(file.path('./www',
+                                        paste('oregon_stream.png')))
+    
+    # Return list containing the filename and alt text
+    list(src = filename, alt='Oregon stream photo')
+  },
+  deleteFile=FALSE)
+  
   # Reactive Value to store all user data
   userData <- reactiveValues()
   
