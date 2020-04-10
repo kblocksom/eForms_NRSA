@@ -115,9 +115,8 @@ server <- function(input, output, session) {
   
   # Download Excel File
   output$downloadxlsx<- downloadHandler(filename = function() { 
-    paste(str_extract(filesInDir()[1],"[:alnum:]+[:punct:][:alpha:]+[:punct:][:alnum:]+[:punct:][:alnum:][:punct:]"),
-           "summary.xlsx",sep='')
-    },
+    paste(unique(userData$finalOut[[1]][[1]]$UID),
+          "summary.xlsx", sep='_')},
     content = function(file) {
       write_xlsx(karenWriteShiny(as.vector(input$directory$name), userData$finalOut), path = file)}
   )
@@ -126,7 +125,8 @@ server <- function(input, output, session) {
   # Download CSV
   
   output$downloadcsv <- downloadHandler( filename = function() {
-    paste(str_extract(filesInDir()[1],"[:alnum:]+[:punct:][:alpha:]+[:punct:][:alnum:]+[:punct:][:alnum:][:punct:]"), "csvFiles.zip", sep="")
+    paste(unique(userData$finalOut[[1]][[1]]$UID),
+          "csvFiles.zip", sep="_")
   },
   content = function(fname) {
     fs <- c()
@@ -134,9 +134,8 @@ server <- function(input, output, session) {
 
     for (i in 1:length(z)) {
       
-      path <- paste0(
-        str_extract(filesInDir()[1],"[:alnum:]+[:punct:][:alpha:]+[:punct:][:alnum:]+[:punct:][:alnum:][:punct:]"),
-        names(z)[[i]], ".csv")
+      path <- paste0(unique(userData$finalOut[[1]][[1]]$UID), "_",
+                     names(z)[[i]], ".csv")
       fs <- c(fs, path)
       write.csv(data.frame(z[[i]]), path, row.names=F)
     }
@@ -156,7 +155,8 @@ server <- function(input, output, session) {
   # Send input data to html report
   
   output$report <- downloadHandler(filename = function(){
-    paste(str_extract(filesInDir()[1],"[:alnum:]+[:punct:][:alpha:]+[:punct:][:alnum:]+[:punct:][:alnum:][:punct:]"),"LandownerReport.html",sep="")
+    paste(unique(userData$finalOut[[1]][[1]]$UID),
+          "LandownerReport.html",sep="_")
     },
     content= function(file){
       tempReport <- normalizePath('landownerReport_fromApp.Rmd')
